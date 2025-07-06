@@ -34,8 +34,8 @@ jobs:
         chmod 600 private_key.pem
 
         ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
-          docker pull yourdockerhubusername/yourimagename:latest
+          docker pull uzzi001/react-app:latest
           docker stop mycontainer || true
           docker rm mycontainer || true
-          docker run -d --name mycontainer -p 80:80 --restart always yourdockerhubusername/yourimagename:latest
+          docker run -d --name mycontainer -p 80:80 --restart always uzzi001/react-app:latest
         EOF
