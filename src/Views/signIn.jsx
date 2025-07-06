@@ -24,7 +24,7 @@ const BootstrapForm = () => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <small id="emailHelp" className="form-text text-muted">
-          We'll never share your email with anyone else.
+         check pipline
         </small>
       </div>
 
