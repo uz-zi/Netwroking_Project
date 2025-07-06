@@ -28,11 +28,14 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY_B64 }}" | base64 -d > private_key.pem
         chmod 600 private_key.pem
 
-    - name: SSH into EC2 and Deploy Docker Container
+    - name: SSH and deploy Docker container
       run: |
-        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
-          docker pull ${{ secrets.DOCKER_USERNAME }}/react-app:latest
-          docker stop react-container || true
-          docker rm react-container || true
-          docker run -d --restart always --name react-container -p 80:80 ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+        echo "${{ secrets.SSH_PRIVATE_KEY_B64 }}" | base64 --decode > private_key.pem
+        chmod 600 private_key.pem
+
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
+          docker pull yourdockerhubusername/yourimagename:latest
+          docker stop mycontainer || true
+          docker rm mycontainer || true
+          docker run -d --name mycontainer -p 80:80 --restart always yourdockerhubusername/yourimagename:latest
         EOF
