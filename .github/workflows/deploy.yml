@@ -1,0 +1,38 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build Docker Image
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/react-app:latest .
+
+    - name: Push Docker Image
+      run: docker push ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+
+    - name: Decode and Save EC2 SSH Private Key
+      run: |
+        echo "${{ secrets.SSH_PRIVATE_KEY_B64 }}" | base64 -d > private_key.pem
+        chmod 600 private_key.pem
+
+    - name: SSH into EC2 and Deploy Docker Container
+      run: |
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
+          docker pull ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+          docker stop react-container || true
+          docker rm react-container || true
+          docker run -d --restart always --name react-container -p 80:80 ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+        EOF
