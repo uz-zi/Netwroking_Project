@@ -35,7 +35,11 @@ jobs:
 
         ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@${{ secrets.EC2_PUBLIC_IP }} << 'EOF'
           docker pull uzzi001/react-app:latest
-          docker stop mycontainer || true
-          docker rm mycontainer || true
-          docker run -d --name mycontainer -p 80:80 --restart always uzzi001/react-app:latest
+
+          # Stop and remove existing container
+          docker stop react_app || true
+          docker rm react_app || true
+
+          # Run new container on port 80
+          docker run -d --name react_app -p 80:80 --restart always uzzi001/react-app:latest
         EOF
