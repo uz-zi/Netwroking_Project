@@ -7,7 +7,6 @@ const BootstrapForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log({ email, password, checked });
   };
 
@@ -29,6 +28,17 @@ const BootstrapForm = () => {
       </div>
 
       <div className="form-group">
+        <label htmlFor="exampleInputPassword1">Password</label>
+        <input
+          type="password"
+          className="form-control"
+          id="exampleInputPassword1"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+
+       <div className="form-group">
         <label htmlFor="exampleInputPassword1">Password</label>
         <input
           type="password"
